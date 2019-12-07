@@ -6,9 +6,10 @@ const STARTDATE = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const dayDivs = dayNames.map(dayName => `<div class='calendar-element dayName'>${dayName}</div>`)
 
-class calendarElement {
+
+class calendarAux{
     static fromJSON(jsonElem) {
-        const result = calendarElement.properSubclass(jsonElem.type);
+        const result = calendarAux.properSubclass(jsonElem.type);
         Object.keys(jsonElem).forEach(key => result[key] = jsonElem[key]);
         result.calendarDate = new Date(2019, 11, result.date);
         return result;
@@ -20,82 +21,19 @@ class calendarElement {
                 return new Movie();
             case "TV":
                 return new TVEpisode();
+            case "PODCAST":
+                return new PodcastEpisode();
             default:
                 console.log(type);
                 return new calendarElement();
         }
     }
 
-    get isDisabled(){
-        return this.calendarDate < STARTDATE;
-    }
-
-    cssClasses() {
-        return [
-            "calendar-element",
-            this.isDisabled ? "disabled" : ""
-        ]
-    }
-
-    get classList() {
-        return "'" + this.cssClasses().join(" ") + "'";
-    }
-
-    background(){
-        return this.img ? `background-image:url(${this.img})` : `background-color:#c00`;
-    }
-
-    get previewStyle(){
-        return "'" +
-        [
-            this.background(),
-            this.img_pos_y ? `background-position-y:${this.img_pos_y}` : '',
-            this.img_pos_x ? `background-position-x:${this.img_pos_x}` : '',
-            this.full_width === "TRUE" ? `background-size:auto 100%` : '',
-        ].join(";")
-        +"'"
-    }
-
-    renderPreview() {
-        return `
-        <div class=${this.classList} style=${this.previewStyle}  onclick='showModal(${this.date})'>
-            <span class='date'>${this.date}</span>    
-        
-        </div>`
-        //<h1>${this.title}</h1>
-    }
-
-    renderDetail(){
-        return `
-        <div class=${this.classList}>
-            <img src=${this.img} />
-            <div class="info">
-                <h1>${this.title}</h1>
-                <span class="synopsis">${this.synopsis}</span>
-                <div class='linksSection'>
-                    ${this.links.map(calendarElement.createLinkButton)}
-                </div>
-            </div>
-        </div>`
-    }
-
-    static createLinkButton(link){
-        if(!link){
-            return '<button disabled>No Streaming Link Available</button>';
-        }
-        const streamingProvider = calendarElement.determineStreamingProvider(link)
-        const buttonText = "Watch" + (streamingProvider.length > 0 ? ` on ${streamingProvider}` : ``);
-        return `
-        <a href=${link}>
-            <button class=${streamingProvider.replace(/ /g, "_")}>${buttonText}</button>
-        </a>`
-    }
-
-    static determineStreamingProvider(link){
-        const urlRegex = /(http|https)(:\/\/)(www.)?(.+)(.com\/)(.+)/;
+    static determineStreamingProvider(link) {
+        const urlRegex = /(http|https)(:\/\/)(www.)?(.+)(.com\/|.org\/|.net\/)(.+)/;
         const matches = link.match(urlRegex);
         const domain = matches[4];
-        switch(domain.toUpperCase()) {
+        switch (domain.toUpperCase()) {
             case "AMAZON":
                 return "Amazon";
             case "DAILYMOTION":
@@ -114,11 +52,114 @@ class calendarElement {
                 return "Crackle";
             case "YOUTUBE":
                 return "Youtube";
+            case "ARCHIVE":
+                return "Archive.org"
             default:
                 console.log(matches);
                 return "";
         }
+    }
 
+    static runtime(timeInMinutes){
+        if(timeInMinutes < 60){
+            return `${timeInMinutes} minutes`
+        } else{
+            const hours = Math.floor(timeInMinutes / 60);
+            const minutes = (timeInMinutes % 60);
+            return `${hours} hours ${minutes} minutes`
+        }
+    }
+
+    static convertDate(daysSince1900){
+        const date = new Date(1900, 0, daysSince1900);
+        const [year, month, day] = [date.getFullYear(), date.getMonth() + 1, date.getDate() - 1]
+        return [month,day,year].join("/");
+    }
+}
+
+
+class calendarElement {
+    get isDisabled() {
+        return this.calendarDate < STARTDATE;
+    }
+
+    get classList() {
+        return "'" + this.cssClasses().join(" ") + "'";
+    }
+
+    cssClasses() {
+        return [
+            "calendar-element",
+            this.isDisabled ? "disabled" : ""
+        ]
+    }
+
+    background() {
+        return this.img ? `background-image:url(${this.img})` : `background-color:#c00`;
+    }
+
+    get previewStyle() {
+        return "'" +
+            [
+                this.background(),
+                this.img_pos_y ? `background-position-y:${this.img_pos_y}` : '',
+                this.img_pos_x ? `background-position-x:${this.img_pos_x}` : '',
+                this.full_width === "TRUE" ? `background-size:auto 100%` : '',
+            ].filter(inlineStyle => inlineStyle.length > 0)
+            .join(";")
+            + "'"
+    }
+
+    renderPreview() {
+        return `
+        <div class=${this.classList} style=${this.previewStyle}  onclick='showModal(${this.date})'>
+            <span class='date'>${this.formatted_date}</span> 
+            <span class='weekday'>${this.weekday}</span>   
+        </div>`
+    }
+
+    header(){
+        return `<h1>${this.title}</h1>`;
+    }
+
+    renderDetail() {
+        return `
+        <div class=${this.classList}>
+            <img src="${this.img}" />
+            <div class="info">
+                <div class="header">
+                    ${this.header()}
+                </div>
+                <span class="synopsis">${this.synopsis}</span>
+                <div class="linksSection">
+                    ${this.links.map(link => this.createLinkButton(link))}
+                </div>
+                <br>
+                <div class="extraInfo">
+                    <p> Released: ${calendarAux.convertDate(this.release_date)} </p>
+                    <p> Runtime: ${calendarAux.runtime(this.runtime)} </p>
+                    <p> <a href="${this.imdb}">More info on IMDB</a> </p>
+                </div>
+                <br>
+            </div>
+        </div>`
+    }
+
+    buttonVerb(){
+        return 'Watch';
+    }
+
+    createLinkButton(link) {
+        if (!link) {
+            return '<button disabled>No Streaming Link Available</button>';
+        }
+        const streamingProvider = calendarAux.determineStreamingProvider(link)
+        const streamingClass = streamingProvider.replace(/ /g, "_")
+        const buttonText = this.buttonVerb() + (streamingProvider.length > 0 ? ` on ${streamingProvider}` : ``);
+        return `
+        <a href="${link}">
+            <button class="${streamingClass}">${buttonText}</button>
+        </a>`
     }
 }
 
@@ -130,21 +171,12 @@ class TVEpisode extends calendarElement {
         ];
     }
 
-    renderDetail(){
+    header(){
         return `
-        <div class=${this.classList}>
-            <img src=${this.img} />
-            <div class="info">
-                <h1>${this.title}</h1>
-                <h3> ${this.tv_info.series} Season ${this.tv_info.season}, Episode ${this.tv_info.episode} </h3>
-                <span class="synopsis">${this.synopsis}</span>
-                <div class='linksSection'>
-                    ${this.links.map(calendarElement.createLinkButton)}
-                </div>
-            </div>
-        </div>`
+            <h1>${this.title}</h1>
+            <h3> ${this.tv_info.series} Season ${this.tv_info.season}, Episode ${this.tv_info.episode} </h3>
+        `
     }
-
 }
 
 class Movie extends calendarElement {
@@ -156,25 +188,43 @@ class Movie extends calendarElement {
     }
 }
 
-function hideModal(e){
-    const detail = document.getElementById('calendarElement-detail');
-    if(detail.classList && [...detail.classList.values()].find(className => className === "shown")){
-        detail.classList.remove("shown");
+class PodcastEpisode extends calendarElement {
+    cssClasses() {
+        return [
+            ...super.cssClasses(),
+            "podcast"
+        ];
+    }
+
+    buttonVerb(){
+        return 'Listen';
     }
 }
 
-function showModal(date){
-    console.log(date);
-    console.log(calendarElems.length);
-    const detailElem = calendarElems.find(calendarElem => calendarElem.date == date);
-    document.getElementById('detail-content').innerHTML = detailElem.renderDetail();
+function hideModal(e) {
     const detailContainer = document.getElementById('calendarElement-detail');
-    if(detailContainer.classList && !detailContainer.classList.contains('shown')){
-        detailContainer.classList.add('shown');
+    if (detailContainer.classList && [...detailContainer.classList.values()].find(className => className === "shown")) {
+        detailContainer.classList.remove("shown");
     }
 }
 
-calendarElems = data.map(calendarElement.fromJSON)
+function showModal(date) {
+    const detailElem = calendarElems.find(calendarElem => calendarElem.date == date);
+    const detailContent = document.getElementById('detail-content');
+    const detailContainer = document.getElementById('calendarElement-detail');
+
+    detailContent.innerHTML = detailElem.renderDetail();
+    detailContainer.classList.add('shown');
+}
+
+calendarElems = data.map(calendarAux.fromJSON)
 console.log(calendarElems);
 const previews = calendarElems.map(elem => elem.renderPreview())
 document.getElementById('calendar-preview').innerHTML = dayDivs.join(" ") + previews.join(" ");
+
+const renderedcalendarElems = document.getElementsByClassName('calendar-element');
+if(window.innerWidth < 600){
+    renderedcalendarElems.item(7 + new Date().getDate() - 1).scrollIntoView();
+    window.scrollBy(0,-160);
+}
+console.log(renderedcalendarElems);

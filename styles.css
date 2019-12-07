@@ -12,69 +12,175 @@ body{
     -ms-overflow-style: none;
 }
 
-#advent-calendar{
-    margin: 0 auto;
-    width: 1440px;
-    border: 1px solid green;
-    background-color: white;
-    max-width: 90vw;
+@media(min-width:600px){
+    #advent-calendar{
+        margin: 0 auto;
+        width: 1440px;
+        background-color: white;
+        max-width: 90vw;
+    }
+    
+    #calendar-preview{
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        column-gap: 10px;
+        row-gap: 10px;
+    }
+
+    #calendar-preview .calendar-element{
+        border: 1px solid black;
+        padding: 10px;
+        background-size: 100%;
+        min-height: 150px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-color: #777;
+    }
+
+    #calendar-preview .calendar-element.dayName{
+        min-height: auto;
+        font-size: 24pt;
+        text-align: center;
+        background-color: white;
+    }
+
+    #calendar-preview .calendar-element span.weekday{
+        display: none;
+    }
+    
+    #calendar-preview .calendar-element h2{
+        font-size: 14px;
+        font-family: 'Average', serif;
+    }
+    
+    #calendar-preview .calendar-element h3{
+        font-size: 10px;
+        font-family: 'Open Sans', serif;
+        text-align: right;
+        /* grid-area: show; */
+    }    
+
+    #detail-content{
+        position: relative;
+        background-color: white;
+        grid-column: 2/3;
+        grid-row: 2/3;
+        width: 50vw;
+        max-height: 90vh;
+        overflow-y: scroll;
+        z-index: 2;
+        box-shadow: 10px 10px 10px 10px rgba(0,0,0,0.75);
+    }
+
+    #detail-content .calendar-element{
+        display: grid;
+        grid-template-columns: auto 40%;
+        column-gap: 10px;
+    }
 }
 
-#calendar-preview{
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    column-gap: 10px;
-    row-gap: 10px;
-}
+@media(max-width:600px){
+    #advent-calendar{
+        margin: 0 auto;
+        width: 95vw;
+    }
+    
+    #calendar-preview{
+        display: grid;
+        grid-template-columns: 1fr;
+        row-gap: 10px;
+    }
 
-#calendar-preview .calendar-element{
-    border: 1px solid black;
-    /* max-width: 108px; */
-    padding: 10px;
-    background-size: 100%;
-    min-height: 150px;
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-color: #777;
-}
+    #calendar-preview .calendar-element{
+        border: 1px solid black;
+        padding: 10px;
+        background-size: 100%;
+        min-height: 150px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-color: #777;
+    }
+    
+    #calendar-preview .calendar-element h2{
+        font-size: 14px;
+        font-family: 'Average', serif;
+    }
+    
+    #calendar-preview .calendar-element h3{
+        font-size: 10px;
+        font-family: 'Open Sans', serif;
+        text-align: right;
+        /* grid-area: show; */
+    }    
 
-#calendar-preview .calendar-element.dayName{
-    min-height: auto;
-    font-size: 24pt;
-    text-align: center;
-    background-color: white;
+    .dayName{
+        display: none;
+    }
+
+    #detail-content{
+        position: relative;
+        background-color: white;
+        grid-column: 2/3;
+        grid-row: 2/3;
+        width: 90vw;
+        max-height: 90vh;
+        overflow-y: scroll;
+        z-index: 2;
+        box-shadow: 10px 10px 10px 10px rgba(0,0,0,0.75);
+    }
+
+    #detail-content .calendar-element{
+        display: grid;
+        grid-template-columns: 60% 40%;
+        grid-template-areas: 'title title' 'poster synopsis' 'links links' 'extraInfo extraInfo';
+    }
+
+    #detail-content .calendar-element .info{
+        display: contents;
+    }
+
+    #detail-content .calendar-element .header{
+        grid-area: title;
+    }
+
+    #detail-content .calendar-element img{
+        grid-area: poster
+    }
+
+    #detail-content .calendar-element .synposis{
+        grid-area: synopsis;
+    }
+
+    #detail-content .calendar-element .linksSections{
+        grid-area: links;
+    }
+
+    #detail-content .calendar-element .extraInfo{
+        grid-area: extraInfo;
+    }
+    
 }
 
 #calendar-preview .calendar-element.disabled{
     filter: grayscale(90);
 }
 
-#calendar-preview .calendar-element span.date{
+
+#calendar-preview .calendar-element span.date,
+#calendar-preview .calendar-element span.weekday{
     font-size: 24px;
     text-align: right;
     font-family: 'Average', serif;
-    /* background-color: rgba(64,64,64,0.25); */
     text-shadow: black 0px 0px 15px ;
     color: white;   
-    /* background-color: rgba(0,0,0,0.25);
-    border-radius: 50% */
-    /* grid-area: title; */
 }
 
-#calendar-preview .calendar-element h2{
-    font-size: 14px;
-    font-family: 'Average', serif;
-}
-
-#calendar-preview .calendar-element h3{
-    font-size: 10px;
-    font-family: 'Open Sans', serif;
-    text-align: right;
-    /* grid-area: show; */
+#calendarElement-detail{
+    display: none;
 }
 
 #calendarElement-detail.shown{
-    position: absolute;
+    position: fixed;
     left: 0;
     right: 0;
     top: 0;
@@ -94,26 +200,7 @@ body{
     z-index: 1;
 }
 
-#detail-content{
-    position: relative;
-    background-color: white;
-    grid-column: 2/3;
-    grid-row: 2/3;
-    width: 50vw;
-    max-height: 90vh;
-    overflow-y: scroll;
-    z-index: 2;
-    box-shadow: 10px 10px 10px 10px rgba(0,0,0,0.75);
-}
 
-#calendarElement-detail{
-    display: none;
-}
-
-
-#detail-content .calendar-element{
-    column-gap: 10px;
-}
 
 #detail-content .calendar-element img{
     max-width: 100%;
@@ -138,13 +225,13 @@ body{
 
 }
 
-#detail-content .calendar-element{
-    display: grid;
-    grid-template-columns: auto 40%;
-}
-
 #detail-content .info{
     align-self: center;
+}
+
+#detail-content p{
+   text-align: right;
+   margin: 0;
 }
 
 span.date{
@@ -189,19 +276,16 @@ span.synopsis{
 
 #detail-content .calendar-element button.HBO{
     color:#aeaead;
-    /* text-shadow: white 1px 1px 1px; */
     background-color: black;
 }
 
 #detail-content .calendar-element button.Amazon {
     color:#00a8e0;
-    /* text-shadow: white 1px 1px 1px; */
     background-color: white;
 }
 
 #detail-content .calendar-element button.Youtube {
     color:white;
-    /* text-shadow: white 1px 1px 1px; */
     background-color: #ff0000;
 }
 
