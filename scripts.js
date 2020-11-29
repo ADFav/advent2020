@@ -1,5 +1,3 @@
-console.log(data);
-
 const now = new Date();
 const STARTDATE = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
@@ -11,7 +9,7 @@ class calendarAux{
     static fromJSON(jsonElem) {
         const result = calendarAux.properSubclass(jsonElem.type);
         Object.keys(jsonElem).forEach(key => result[key] = jsonElem[key]);
-        result.calendarDate = new Date(2019, 11, result.date);
+        result.calendarDate = new Date(2020, 11, result.date);
         return result;
     }
 
@@ -32,7 +30,7 @@ class calendarAux{
     static determineStreamingProvider(link) {
         const urlRegex = /(http|https)(:\/\/)(www.)?(.+)(.com\/|.org\/|.net\/)(.+)/;
         const matches = link.match(urlRegex);
-        const domain = matches[4];
+        const domain = matches ? matches[4] : '';
         switch (domain.toUpperCase()) {
             case "AMAZON":
                 return "Amazon";
@@ -54,6 +52,17 @@ class calendarAux{
                 return "Youtube";
             case "ARCHIVE":
                 return "Archive.org"
+            case "PEACOCKTV":
+                return "Peacock";
+            case "TUBITV":
+                return "Tubi";
+            case "CBS":
+                return "CBS.com";
+            case "FREEFORM":
+                return "Freeform";
+            case "SHOWTIMEANYTIME":
+                return "Showtime";
+
             default:
                 console.log(matches);
                 return "";
@@ -95,7 +104,7 @@ class calendarElement {
     }
 
     background() {
-        return this.img ? `background-image:url(${this.img})` : `background-color:#c00`;
+        return this.img ? `background-image:url(${this.img})` : `background-color:var(--advent_red)`;
     }
 
     get previewStyle() {
@@ -132,17 +141,22 @@ class calendarElement {
                 </div>
                 <span class="synopsis">${this.synopsis}</span>
                 <div class="linksSection">
-                    ${this.links.map(link => this.createLinkButton(link))}
+                    ${this.links.map(link => this.createLinkButton(link)).join("")}
+                    ${this.createPurchaseButton(this.purchase_links)}
                 </div>
                 <br>
                 <div class="extraInfo">
                     <p> Released: ${calendarAux.convertDate(this.release_date)} </p>
                     <p> Runtime: ${calendarAux.runtime(this.runtime)} </p>
-                    <p> <a href="${this.imdb}">More info on IMDB</a> </p>
+                    ${this.imdbLink()}
                 </div>
                 <br>
             </div>
         </div>`
+    }
+
+    imdbLink(){
+        return `<p> <a href="${this.imdb}" target="_blank" rel="noopener noreferrer">More info on IMDB</a> </p>`;
     }
 
     buttonVerb(){
@@ -157,9 +171,18 @@ class calendarElement {
         const streamingClass = streamingProvider.replace(/ /g, "_")
         const buttonText = this.buttonVerb() + (streamingProvider.length > 0 ? ` on ${streamingProvider}` : ``);
         return `
-        <a href="${link}">
+        <a href="${link}" target="_blank" rel="noopener noreferrer">
             <button class="${streamingClass}">${buttonText}</button>
         </a>`
+    }
+
+    createPurchaseButton(link){
+        if(!link){
+            return '';
+        }
+        const linkButton = this.createLinkButton(link);
+        const purchaseButton = linkButton.replace(this.buttonVerb(),"Purchase");
+        return purchaseButton;
     }
 }
 
@@ -199,6 +222,10 @@ class PodcastEpisode extends calendarElement {
     buttonVerb(){
         return 'Listen';
     }
+
+    imdbLink(){
+        return '';
+    }
 }
 
 function hideModal(e) {
@@ -217,14 +244,20 @@ function showModal(date) {
     detailContainer.classList.add('shown');
 }
 
-calendarElems = data.map(calendarAux.fromJSON)
-console.log(calendarElems);
-const previews = calendarElems.map(elem => elem.renderPreview())
-document.getElementById('calendar-preview').innerHTML = dayDivs.join(" ") + previews.join(" ");
+window.onload = async () =>{
+    const backendURL = "https://script.google.com/macros/s/AKfycbxZsNhx5qfbIVDfNoJC21A5S2g6CtFdnFoNryoAnqDcxUKzNTpC/exec";
+    const response = await fetch(backendURL);
+    const data = await response.json();
 
-const renderedcalendarElems = document.getElementsByClassName('calendar-element');
-if(window.innerWidth < 600){
-    renderedcalendarElems.item(7 + new Date().getDate() - 1).scrollIntoView();
-    window.scrollBy(0,-160);
+    calendarElems = data.map(calendarAux.fromJSON)
+    console.log(calendarElems);
+    const previews = calendarElems.map(elem => elem.renderPreview())
+    document.getElementById('calendar-preview').innerHTML = dayDivs.join(" ") + "<div></div><div></div>" + previews.join(" ");
+
+    const renderedcalendarElems = document.getElementsByClassName('calendar-element');
+    if(window.innerWidth < 600){
+        renderedcalendarElems.item(9 + new Date().getDate() - 1).scrollIntoView();
+        window.scrollBy(0,-160);
+    }
+    console.log(renderedcalendarElems);
 }
-console.log(renderedcalendarElems);

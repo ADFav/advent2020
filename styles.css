@@ -1,7 +1,15 @@
 @import url('https://fonts.googleapis.com/css?family=Average|Open+Sans&display=swap');
 
+:root{
+    --advent_darkGreen: #0b5e15;
+    --advent_lighterGreen: #308505;
+    --advent_gold: #F8B229;
+    --advent_orange: #EA4630;
+    --advent_red: #d41616;
+}
+
 body{
-    background-color: green;
+    background-color: var(--advent_darkGreen);
 }
 
 *::-webkit-scrollbar{
@@ -171,8 +179,10 @@ body{
     font-size: 24px;
     text-align: right;
     font-family: 'Average', serif;
-    text-shadow: black 0px 0px 15px ;
-    color: white;   
+    background-image: radial-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0));
+    padding: 3px 5px;
+    border-radius: 5px;
+    color: var(--advent_gold);   
 }
 
 #calendarElement-detail{
