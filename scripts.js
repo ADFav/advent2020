@@ -28,7 +28,7 @@ class calendarAux{
     }
 
     static determineStreamingProvider(link) {
-        const urlRegex = /(http|https)(:\/\/)(www.)?(.+)(.com\/|.org\/|.net\/)(.+)/;
+        const urlRegex = /(http|https)(:\/\/)(www.)?(.+)(.com\/|.org\/|.net\/|.tv\/)(.+)/;
         const matches = link.match(urlRegex);
         const domain = matches ? matches[4] : '';
         switch (domain.toUpperCase()) {
@@ -74,7 +74,7 @@ class calendarAux{
                 return "The Roku Channel"
             case "TV.APPLE":
                 return "Apple TV+"
-            case "PLUTO.TV":
+            case "PLUTO":
                 return "Pluto TV"
             case "KANOPY":
                 return "Kanopy"
