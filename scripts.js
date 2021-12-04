@@ -252,7 +252,7 @@ window.onload = async () =>{
     calendarElems = data.map(calendarAux.fromJSON)
     console.log(calendarElems);
     const previews = calendarElems.map(elem => elem.renderPreview())
-    document.getElementById('calendar-preview').innerHTML = dayDivs.join(" ") + "<div></div><div></div>" + previews.join(" ");
+    document.getElementById('calendar-preview').innerHTML = dayDivs.join(" ") + "<div></div><div></div><div></div>" + previews.join(" ");
 
     const renderedcalendarElems = document.getElementsByClassName('calendar-element');
     if(window.innerWidth < 600){
