@@ -28,7 +28,7 @@ class calendarAux{
     }
 
     static determineStreamingProvider(link) {
-        const urlRegex = /(http|https)(:\/\/)(www.)?(.+)(.com\/|.org\/|.net\/|.tv\/)(.+)/;
+        const urlRegex = /(http|https)(:\/\/)(www.)?(.+)(\.com\/|\.org\/|\.net\/|\.tv\/)(.+)/;
         const matches = link.match(urlRegex);
         const domain = matches ? matches[4] : '';
         switch (domain.toUpperCase()) {
