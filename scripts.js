@@ -62,7 +62,18 @@ class calendarAux{
                 return "Freeform";
             case "SHOWTIMEANYTIME":
                 return "Showtime";
-
+            case "FXNOW.FXNETWORKS":
+                return "FX Now"
+            case "HOOPLADIGITAL":
+                return "Hoopla!"
+            case "PARAMOUNTPLUS":
+                return "Paramount+"
+            case "PLAY.HBOMAX":
+                return "HBO Max"
+            case "THEROKUCHANNEL.ROKU":
+                return "The Roku Channel"
+            case "TV.APPLE":
+                return "Apple TV+"
             default:
                 console.log(matches);
                 return "";
