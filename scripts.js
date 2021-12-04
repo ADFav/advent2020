@@ -74,6 +74,10 @@ class calendarAux{
                 return "The Roku Channel"
             case "TV.APPLE":
                 return "Apple TV+"
+            case "PLUTO.TV":
+                return "Pluto TV"
+            case "KANOPY":
+                return "Kanopy"
             default:
                 console.log(matches);
                 return "";

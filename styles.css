@@ -329,3 +329,15 @@ span.synopsis{
     background-color: #ff0000;
 }
 
+#detail-content .calendar-element button.Pluto_TV {
+    color:rgb(255,222,43);
+    background-color: black;
+}
+
+#detail-content .calendar-element button.Kanopy {
+    color: rgb(222,63,0);
+    background-color: black;
+}
+
+
+
