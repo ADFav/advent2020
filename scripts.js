@@ -179,7 +179,7 @@ class calendarElement {
             return '<button disabled>No Streaming Link Available</button>';
         }
         const streamingProvider = calendarAux.determineStreamingProvider(link)
-        const streamingClass = streamingProvider.replace(/ /g, "_")
+        const streamingClass = streamingProvider.replace(/ /g, "_").replace(/(!|+)/g,'')
         const buttonText = this.buttonVerb() + (streamingProvider.length > 0 ? ` on ${streamingProvider}` : ``);
         return `
         <a href="${link}" target="_blank" rel="noopener noreferrer">
