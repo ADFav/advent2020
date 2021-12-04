@@ -271,7 +271,7 @@ window.onload = async () =>{
 
     const renderedcalendarElems = document.getElementsByClassName('calendar-element');
     if(window.innerWidth < 600){
-        renderedcalendarElems.item(9 + new Date().getDate() - 1).scrollIntoView();
+        renderedcalendarElems.item(6 + new Date().getDate() - 1).scrollIntoView();
         window.scrollBy(0,-160);
     }
     console.log(renderedcalendarElems);
